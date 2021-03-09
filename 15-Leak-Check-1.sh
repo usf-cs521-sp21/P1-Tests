@@ -13,6 +13,12 @@ fd_check='
 
 test_start "Memory Leak Check"
 
+if ! ( which valgrind &> /dev/null ); then
+    # "valgrind is not installed. Please install (as root) with:"
+    # "pacman -Sy valgrind"
+    test_end 1
+fi
+
 leak_output=$(valgrind \
     --track-fds=yes --track-origins=yes --leak-check=full \
     ./da /usr 2>&1)
