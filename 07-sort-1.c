@@ -1,0 +1,88 @@
+#if 0
+    source "${TEST_DIR}/lib/crunner" -lelist
+#endif
+
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <unistd.h>
+#include <dlfcn.h>
+
+#include "elist.h"
+
+struct elist {
+    size_t capacity;
+    size_t size;
+    size_t item_sz;
+    void *element_storage;
+};
+
+int comparator(const void *a, const void *b)
+{
+    int *ai = (int *) a;
+    int *bi = (int *) b;
+
+    return *ai > *bi;
+}
+
+test_start("Tests the sort function");
+
+subtest("Creates a list, sorts it, and verifies the output",
+    int data[] = {
+        99,
+        45,
+        21,
+        0,
+        3,
+        42,
+        108,
+        9999,
+        12,
+        40,
+        3,
+        4,
+        1,
+        2,
+        370281,
+        7
+    };
+
+    int data_sorted[] = {
+        0,
+        1,
+        2,
+        3,
+        3,
+        4,
+        7,
+        12,
+        21,
+        40,
+        42,
+        45,
+        99,
+        108,
+        9999,
+        370281,
+    };
+
+    struct elist *list = elist_create(20, sizeof(int));
+    for (int i = 0; i < sizeof(data) / sizeof(int); ++i) {
+        elist_add(list, &data[i]);
+    }
+
+    elist_sort(list, comparator);
+
+    for (int i = 0; i < sizeof(data) / sizeof(int); ++i) {
+        int *value = elist_get(list, i);
+        test_assert(*value == data_sorted[i]);
+        printf("%d == %d\n", *value, data_sorted[i]);
+    }
+
+);
+
+test_end

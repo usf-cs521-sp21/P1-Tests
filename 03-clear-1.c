@@ -21,7 +21,7 @@ struct elist {
     void *element_storage;
 };
 
-test_start("Ensures clear() works correctly by checking the list size and accessibility of cleared elements");
+test_start("Ensures clear() works correctly by checking the list size and accessibility of cleared elements (requires size() to be implemented)");
 
 subtest("clear",
 {

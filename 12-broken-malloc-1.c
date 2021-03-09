@@ -19,7 +19,12 @@ void *malloc(size_t size)
     return NULL;
 }
 
-test_start("Tests functions when malloc() is broken");
+void *calloc(size_t nmemb, size_t size)
+{
+    return NULL;
+}
+
+test_start("Tests functions when malloc()/calloc() is broken");
 
 subtest("elist_create",
 {

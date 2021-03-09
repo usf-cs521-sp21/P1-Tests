@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+IFS=$'\n'
+
+dir="${1}"
+if [[ -z "${dir}" ]]; then
+    dir="."
+fi
+
+rev=""
+key=2
+if [[ -n "${2}" ]]; then
+    if [[ "${2}" == "age" ]]; then
+        rev="-r"
+        key=3
+    fi
+fi
+
+traverse() {
+    dir="${1}"
+    for file in $(find "${dir}" -type f); do
+        echo "${file} $(stat -c '%s %X' "${file}")"
+    done 
+}
+
+shopt -s checkwinsize
+cat /dev/null
+cols=80
+if [[ -n "${COLUMNS}" && -t 1 ]]; then
+    cols="${COLUMNS}"
+fi
+(( cols -= 29 ))
+shopt -u checkwinsize
+
+for file in $(traverse "${dir}" | sort -n -k ${key} ${rev}); do
+    name=$(awk '{ $(NF-1)=""; $(NF)=""; print }' <<< "${file}")
+    name="${name::-2}"
+
+    size=$(awk '{ print $(NF-1)}' <<< "${file}")
+    size=$(numfmt --to=iec-i --format=%.1f --round=nearest "${size}" \
+        | sed 's/\([a-zA-Z]*\)$/ \1B/g')
+
+    access=$(awk '{ print $(NF)}' <<< "${file}")
+    access=$(date --date="@${access}" +'%b %d %Y')
+
+    if [[ "${#name}" -gt "${cols}" ]]; then
+        name="...${name: -(( cols - 3 ))}"
+    fi
+
+    printf "%*s    %10s    %11s\n" "${cols}" "${name}" "${size}" "${access}"
+done

@@ -15,6 +15,16 @@
 
 #include "elist.h"
 
+int sum_elist(struct elist *list)
+{
+    int total = 0;
+    for (int i = 0; i < elist_size(list); ++i) {
+        int *num = elist_get(list, i);
+        total += *num;
+    }
+    return total;
+}
+
 test_start("Tests adding and retrieving elements.");
 
 subtest("Adding and retrieving a large amount of integers",
@@ -95,5 +105,110 @@ subtest("Testing add_new",
 
     elist_destroy(list);
 });
+
+subtest("Testing set()",
+    int data[] = {
+        99,
+        45,
+        21,
+        0,
+        3,
+        42,
+        108,
+        9999,
+        12,
+        40,
+        4040,
+        4,
+        1,
+        2,
+        370281,
+        7
+    };
+
+    struct elist *list = elist_create(20, sizeof(int));
+    for (int i = 0; i < sizeof(data) / sizeof(int); ++i) {
+        elist_add(list, &data[i]);
+    }
+
+    int total = sum_elist(list);
+    test_printf("%d", total);
+    test_assert(total == 384704);
+    puts("");
+
+    int num = 0;
+    elist_set(list, 14, &num);
+    elist_set(list, 7, &num);
+    total = sum_elist(list);
+    test_printf("%d", total);
+    test_assert(total == 4424);
+    puts("");
+
+    num = 10;
+    elist_set(list, 10, &num);
+    elist_set(list, 9, &num);
+    total = sum_elist(list);
+    test_printf("%d", total);
+    test_assert(total == 364);
+    puts("");
+
+    /* Set everything to 'i' */
+    for (int i = 0; i < sizeof(data) / sizeof(int); ++i) {
+        num = i;
+        elist_set(list, i, &num);
+    }
+    total = sum_elist(list);
+    test_printf("%d", total);
+    test_assert(total == 120);
+    puts("");
+
+    /* Set everything to 0 */
+    num = 0;
+    for (int i = 0; i < sizeof(data) / sizeof(int); ++i) {
+        elist_set(list, i, &num);
+    }
+    total = sum_elist(list);
+    test_printf("%d", total);
+    test_assert(total == 0);
+    puts("");
+
+    elist_destroy(list);
+);
+
+subtest("Testing invalid set()",
+    int data[] = {
+        99,
+        45,
+        21,
+        0,
+        3,
+        42,
+        108,
+        9999,
+        12,
+        40,
+        4040,
+        4,
+        1,
+        2,
+        370281,
+        7
+    };
+
+    struct elist *list = elist_create(20, sizeof(int));
+    for (int i = 0; i < sizeof(data) / sizeof(int); ++i) {
+        elist_add(list, &data[i]);
+    }
+
+    int num = 10;
+    test_assert(elist_set(list, 5, &num) == 0);
+    test_assert(elist_set(list, 0, &num) == 0);
+    test_assert(elist_set(list, 592, &num) == -1);
+    test_assert(elist_set(list, 300, &num) == -1);
+    test_assert(elist_set(list, 16, &num) == -1);
+    test_assert(elist_set(list, 20, &num) == -1);
+
+    elist_destroy(list);
+);
 
 test_end
