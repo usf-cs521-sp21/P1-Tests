@@ -69,6 +69,7 @@ subtest("",
     elist_add(list, &x);
     total = sum_elist(list);
     test_assert(total == 11); /* 5 + 6 */
+    test_printf("%d", total);
     size_t size = elist_size(list);
     test_assert(size == 2);
 
