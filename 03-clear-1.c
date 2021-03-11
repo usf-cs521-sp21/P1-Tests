@@ -97,6 +97,7 @@ subtest("clear_mem",
     }
 
     test_assert(total == 1001);
+    test_printf("%d", total);
 
     elist_destroy(list);
 });
