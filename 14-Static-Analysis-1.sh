@@ -13,6 +13,6 @@ cppcheck --enable=warning,performance \
     --error-exitcode=1 \
     "${TEST_DIR}/../"{elist.c,da.c,util.c} || test_end 1
 
-cc -Wall -Werror "${TEST_DIR}"/../{elist.c,da.c,util.c} || test_end 1
+cc -Wall -Werror -lm "${TEST_DIR}"/../{elist.c,da.c,util.c} || test_end 1
 
 test_end
