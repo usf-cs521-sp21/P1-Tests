@@ -21,7 +21,7 @@ fi
 
 leak_output=$(valgrind \
     --track-fds=yes --track-origins=yes --leak-check=full \
-    ./da /usr 2>&1)
+    ./da /etc 2>&1)
 echo "${leak_output}"
 
 # Check for open FDs
